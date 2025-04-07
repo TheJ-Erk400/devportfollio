@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> CheckMate.io -AN Interactive AI Profile Creator for Developers & Professional</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Source+Code+Pro&display=swap');
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+        }
+        
+        .code-font {
+            font-family: 'Source Code Pro', monospace;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .typing-effect::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-right: 20px;
+        }
+
+        .login-buttons button {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-8">
+    <div id="app" class="max-w-6xl mx-auto">
+        <header class="text-center mb-16 flex items-center justify-center">
+            <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00dbde;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#fc00ff;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logo-gradient)" stroke-width="8" />
+                <path d="M30 50 L50 30 L70 50 L50 70 Z" fill="url(#logo-gradient)" />
+            </svg>
+            <h1 class="text-6xl font-bold mb-4 gradient-text">AI-Profile.io</h1>
+        </header>
+        <div class="min-h-screen">
+            <nav class="bg-white shadow-lg">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between h-16">
+                        <div class="flex">
+                            <div class="flex-shrink-0 flex items-center">
+                                <h1 class="text-xl font-bold text-gray-800">AI Profile Builder</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <div class="px-4 py-6 sm:px-0">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <form id="profile-form" hx-post="/api/profile" hx-swap="outerHTML">
+                            <div class="space-y-6">
+                                <!-- Personal Information -->
+                                <div>
+                                    <h2 class="text-lg font-medium text-gray-900">Personal Information</h2>
+                                    <div class="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+                                        <div>
+                                            <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                            <input type="text" name="fullName" id="fullName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        </div>
+                                        <div>
+                                            <label for="title" class="block text-sm font-medium text-gray-700">Professional Title</label>
+                                            <input type="text" name="title" id="title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- About Me -->
+                                <div>
+                                    <h2 class="text-lg font-medium text-gray-900">About Me</h2>
+                                    <div class="mt-4">
+                                        <textarea name="about" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Skills -->
+                                <div>
+                                    <h2 class="text-lg font-medium text-gray-900">Skills</h2>
+                                    <div class="mt-4">
+                                        <div class="flex flex-wrap gap-2" id="skills-container">
+                                            <input type="text" 
+                                                   id="skill-input" 
+                                                   class="inline-block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                                   placeholder="Add a skill"
+                                                   _="on keydown[key=='Enter'] 
+                                                      call event.preventDefault()
+                                                      get #skill-input.value
+                                                      if it is not empty
+                                                        put `<span class='bg-indigo-100 px-2 py-1 rounded-md text-sm'>${it}<input type='hidden' name='skills[]' value='${it}'></span>` at end of #skills-container
+                                                        set #skill-input.value to ''
+                                                      end">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Experience -->
+                                <div>
+                                    <h2 class="text-lg font-medium text-gray-900">Experience</h2>
+                                    <div id="experience-container" class="mt-4 space-y-4">
+                                        <div class="experience-entry border rounded-md p-4">
+                                            <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Company</label>
+                                                    <input type="text" name="experience[][company]" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Position</label>
+                                                    <input type="text" name="experience[][position]" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                </div>
+                                            </div>
+                                            <div class="mt-4">
+                                                <label class="block text-sm font-medium text-gray-700">Description</label>
+                                                <textarea name="experience[][description]" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" 
+                                            class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                            _="on click clone the first .experience-entry in #experience-container then put it at end of #experience-container">
+                                        Add Experience
+                                    </button>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="pt-5">
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            Generate Profile
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <div class="mb-16">
+            <h2 class="text-4xl font-bold mb-8 text-center gradient-text">How It Works</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card p-6 text-center">
+                    <i class="fas fa-upload text-4xl mb-4 gradient-text"></i>
+                    <h3 class="text-xl font-bold mb-2">1. Upload Your Data</h3>
+                    <p>Connect your GitHub, LinkedIn, or upload your resume to get started.</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <i class="fas fa-magic text-4xl mb-4 gradient-text"></i>
+                    <h3 class="text-xl font-bold mb-2">2. AI Analysis</h3>
+                    <p>Our AI analyzes your information to create a comprehensive profile.</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <i class="fas fa-rocket text-4xl mb-4 gradient-text"></i>
+                    <h3 class="text-xl font-bold mb-2">3. Launch Your Profile</h3>
+                    <p>Review, customize, and publish your interactive AI-powered profile.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-16">
+            <h2 class="text-4xl font-bold mb-8 text-center gradient-text">Interactive Demo</h2>
+            <div class="card p-8">
+                <div class="code-font">
+                    <pre><code>{{ demoCode }}</code></pre>
+                </div>
+                <div class="mt-4">
+                    <button @click="runDemo" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+                        Run Demo
+                    </button>
+                </div>
+                <div v-if="demoResult" class="mt-4 p-4 bg-gray-800 rounded">
+                    <p class="text-green-400">{{ demoResult }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-16">
+            <h2 class="text-4xl font-bold mb-8 text-center gradient-text">Digital Badge</h2>
+            <div class="card p-8 text-center">
+                <p class="mb-4">Share your AI-Profile.io badge with this QR code:</p>
+                <div id="qrcode" class="mx-auto"></div>
+                <button @click="downloadQRCode" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+                    Download QR Code
+                </button>
+            </div>
+        </div>
+        
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold mb-8 gradient-text">Ready to Elevate Your Developer Profile?</h2>
+            <button class="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-8 rounded-full text-xl hover:from-blue-600 hover:to-purple-700 transition duration-300 transform hover:scale-105">
+                Get Started Now
+            </button>
+        </div>
+    </div>
+    
+    <footer class="text-center text-sm py-6 bg-gradient-to-r from-gray-900 to-gray-800 text-gray-300">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="mb-2"> 2024 Level4Foe Framework. All rights reserved.</p>
+            <p>All copywrites & trademarks of Snow Citty Solutions & GuardingUS.AI. INC</p>
+        </div>
+    </footer>
+</div>
+
+<script>
+    const { createApp, ref, onMounted } = Vue
+
+    createApp({
+        setup() {
+            const isAuthenticated = ref(false)
+            const user = ref({})
+            const typedText = ref('')
+            const demoCode = ref(`async function generateProfile(data) {
+  const skills = await AI.analyzeSkills(data);
+  const projects = await AI.extractProjects(data);
+  const coverLetter = await AI.generateCoverLetter(data);
+  return { skills, projects, coverLetter };
+}`)
+            const demoResult = ref('')
+
+            function login(provider) {
+                // Implement login logic
+                isAuthenticated.value = true
+                user.value = { name: 'John Doe' }
+            }
+
+            function logout() {
+                isAuthenticated.value = false
+                user.value = {}
+            }
+
+            function runDemo() {
+                demoResult.value = 'Analyzing profile data...'
+                setTimeout(() => {
+                    demoResult.value = 'Profile generated successfully!'
+                }, 2000)
+            }
+
+            function downloadQRCode() {
+                // Implement QR code download logic
+            }
+
+            onMounted(() => {
+                const text = 'Welcome to AI-Profile.io! Let\'s create your professional profile...'
+                let i = 0
+                const interval = setInterval(() => {
+                    typedText.value = text.slice(0, i)
+                    i++
+                    if (i > text.length) clearInterval(interval)
+                }, 50)
+                
+                // Initialize QR Code
+                const qr = qrcode(0, 'M')
+                qr.addData('https://ai-profile.io/profile/demo')
+                qr.make()
+                document.getElementById('qrcode').innerHTML = qr.createImgTag(5)
+            })
+
+            return {
+                isAuthenticated,
+                user,
+                typedText,
+                demoCode,
+                demoResult,
+                login,
+                logout,
+                runDemo,
+                downloadQRCode
+            }
+        }
+    }).mount('#app')
+</script>
+
+<div class="fixed inset-0 pointer-events-none">
+    <div class="absolute top-10 left-10 w-20 h-20 bg-blue-500 rounded-full opacity-10 floating"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-purple-500 rounded-full opacity-10 floating" style="animation-delay: 1s"></div>
+    <div class="absolute top-1/2 left-1/2 w-24 h-24 bg-green-500 rounded-full opacity-10 floating" style="animation-delay: 2s"></div>
+</div>
+</body>
+</html>

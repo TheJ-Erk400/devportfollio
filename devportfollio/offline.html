@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Offline - CheckMate.io">
+  <title>Offline - CheckMate.io</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 90%;
+      width: 450px;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      background: linear-gradient(90deg, #00dbde, #fc00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.5rem;
+      object-fit: contain;
+    }
+
+    .message {
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .button {
+      display: inline-block;
+      background: linear-gradient(90deg, #00dbde, #fc00ff);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .button:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.8;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <img src="./checkmatemain.png" alt="CheckMate.io Logo" class="logo" />
+    
+    <h1>You're Offline</h1>
+    
+    <div class="icon">
+      <i class="fas fa-wifi"></i>
+    </div>
+    
+    <div class="message">
+      <p>Looks like you lost your internet connection. Some features of CheckMate.io may be unavailable until you're back online.</p>
+      <p>Don't worry though, you can still access previously cached content!</p>
+    </div>
+    
+    <a href="./" class="button">Try Again</a>
+  </div>
+
+  <script>
+    // Check if we're back online and reload if so
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+    
+    // Listen for the button click
+    document.querySelector('.button').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.reload();
+    });
+  </script>
+</body>
+</html> 
